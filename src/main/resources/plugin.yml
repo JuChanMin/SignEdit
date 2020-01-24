@@ -2,7 +2,7 @@ name: SignEdit
 version: "${pom.version}"
 author: PetteriM1
 main: me.petterim1.signedit.SignEdit
-api: ["1.0.0"]
+api: ["2.0.0"]
 
 commands:
   signedit:

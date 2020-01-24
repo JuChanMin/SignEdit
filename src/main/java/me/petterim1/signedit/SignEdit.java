@@ -1,6 +1,5 @@
 package me.petterim1.signedit;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSignPost;
 import cn.nukkit.blockentity.BlockEntitySign;
@@ -14,7 +13,9 @@ import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.form.element.ElementInput;
 import cn.nukkit.form.element.ElementLabel;
 import cn.nukkit.form.window.FormWindowCustom;
-import cn.nukkit.level.Location;
+import cn.nukkit.level.Level;
+import cn.nukkit.math.Vector3i;
+import cn.nukkit.player.Player;
 import cn.nukkit.plugin.PluginBase;
 
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import java.util.Map;
 
 public class SignEdit extends PluginBase implements Listener {
 
-    private Map<Player, Location> editMode = new HashMap<>();
+    private Map<Player, Vector3i> editMode = new HashMap<>();
 
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
@@ -35,8 +36,8 @@ public class SignEdit extends PluginBase implements Listener {
 
         if (b instanceof BlockSignPost) {
             if (editMode.containsKey(p)) {
-                editMode.put(p, b.getLocation());
-                showEditForm(p, b.getLocation());
+                editMode.put(p, b);
+                showEditForm(p, b.getLevel(), b);
             }
         }
     }
@@ -60,17 +61,17 @@ public class SignEdit extends PluginBase implements Listener {
                 text[2] = ((FormWindowCustom) e.getWindow()).getResponse().getInputResponse(3);
                 text[3] = ((FormWindowCustom) e.getWindow()).getResponse().getInputResponse(4);
 
-                Location loc = editMode.get(p);
+                Vector3i loc = editMode.get(p);
 
                 if (loc == null) {
                     p.sendMessage("§cError: Location is null");
                     return;
                 }
 
-                BlockEntitySign be = (BlockEntitySign) loc.getLevel().getBlockEntity(loc);
+                BlockEntitySign be = (BlockEntitySign) p.getLevel().getBlockEntity(loc);
 
                 if (be == null) {
-                    p.sendMessage("§cError: Unable to find block entity for the sign at " + loc2string(loc));
+                    p.sendMessage("§cError: Unable to find block entity for the sign at " + loc2string(p.getLevel(), loc));
                 } else {
                     be.setText(text);
                     p.sendMessage("§aDone!");
@@ -106,15 +107,15 @@ public class SignEdit extends PluginBase implements Listener {
         return false;
     }
 
-    private void showEditForm(Player p, Location loc) {
+    private void showEditForm(Player p, Level l, Vector3i loc) {
         FormWindowCustom form = new FormWindowCustom("SignEdit");
 
-        BlockEntitySign be = (BlockEntitySign) loc.getLevel().getBlockEntity(loc);
+        BlockEntitySign be = (BlockEntitySign) l.getBlockEntity(loc);
 
         if (be == null) {
-            form.addElement(new ElementLabel("§cUnable to find block entity for the sign at " + loc2string(loc)));
+            form.addElement(new ElementLabel("§cUnable to find block entity for the sign at " + loc2string(l, loc)));
         } else {
-            form.addElement(new ElementLabel("§7Editing sign at " + loc2string(loc)));
+            form.addElement(new ElementLabel("§7Editing sign at " + loc2string(l, loc)));
             String[] text = be.getText();
             form.addElement(new ElementInput("", "", text[0]));
             form.addElement(new ElementInput("", "", text[1]));
@@ -125,7 +126,7 @@ public class SignEdit extends PluginBase implements Listener {
         p.showFormWindow(form);
     }
 
-    private static String loc2string(Location loc) {
-        return '[' + loc.getLevel().getName() + "] " + loc.x + ' ' + loc.y + ' ' + loc.z;
+    private static String loc2string(Level l, Vector3i loc) {
+        return '[' + l.getName() + "] " + loc.x + ' ' + loc.y + ' ' + loc.z;
     }
 }
