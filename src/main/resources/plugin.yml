@@ -2,15 +2,15 @@ name: SignEdit
 version: "${pom.version}"
 author: PetteriM1
 main: me.petterim1.signedit.SignEdit
-api: ["2.0.0"]
+api: ["1.0.0"]
 
 commands:
   signedit:
     permission: signedit
-    description: "SignEdit"
+    description: "표지판 수정 모드를 활성화 합니다."
     usage: "/signedit"
 
 permissions:
   signedit:
     default: op
-    description: "SignEdit"
+    description: "표지판 수정 모드를 활성화 합니다."
