@@ -54,7 +54,7 @@ public class SignEdit extends PluginBase implements Listener {
         if (e.getWindow().wasClosed()) return;
 
         if (e.getWindow() instanceof FormWindowCustom) {
-            if (((FormWindowCustom) e.getWindow()).getTitle().equals("SignEdit")) {
+            if (((FormWindowCustom) e.getWindow()).getTitle().equals("표지판 수정")) {
                 String[] text = new String[4];
                 text[0] = ((FormWindowCustom) e.getWindow()).getResponse().getInputResponse(1);
                 text[1] = ((FormWindowCustom) e.getWindow()).getResponse().getInputResponse(2);
@@ -64,17 +64,17 @@ public class SignEdit extends PluginBase implements Listener {
                 Vector3i loc = editMode.get(p);
 
                 if (loc == null) {
-                    p.sendMessage("§cError: Location is null");
+                    p.sendMessage("§c오류 : Location is null");
                     return;
                 }
 
                 BlockEntitySign be = (BlockEntitySign) p.getLevel().getBlockEntity(loc);
 
                 if (be == null) {
-                    p.sendMessage("§cError: Unable to find block entity for the sign at " + loc2string(p.getLevel(), loc));
+                    p.sendMessage("§c오류! 해당 블럭의 엔티티를 찾을 수 없습니다 : " + loc2string(p.getLevel(), loc));
                 } else {
                     be.setText(text);
-                    p.sendMessage("§aDone!");
+                    p.sendMessage("§aIMPULSE>> 표지판을 수정했습니다!");
                 }
             }
         }
@@ -87,7 +87,7 @@ public class SignEdit extends PluginBase implements Listener {
             }
 
             if (!(sender instanceof Player)) {
-                sender.sendMessage("§cThis command can be only used in game");
+                sender.sendMessage("§c인게임에서만 사용 가능");
                 return true;
             }
 
@@ -95,10 +95,10 @@ public class SignEdit extends PluginBase implements Listener {
 
             if (editMode.containsKey(p)) {
                 editMode.remove(p);
-                p.sendMessage("§eSign edit mode §cdisabled");
+                p.sendMessage("§e표지판 수정 모드가 §c비활성화 §e되었습니다.");
             } else {
                 editMode.put(p, null);
-                p.sendMessage("§eSign edit mode §aenabled");
+                p.sendMessage("§e표지판 수정 모드가 §a활성화 §e되었습니다.");
             }
 
             return true;
@@ -108,14 +108,14 @@ public class SignEdit extends PluginBase implements Listener {
     }
 
     private void showEditForm(Player p, Level l, Vector3i loc) {
-        FormWindowCustom form = new FormWindowCustom("SignEdit");
+        FormWindowCustom form = new FormWindowCustom("표지판 수정");
 
         BlockEntitySign be = (BlockEntitySign) l.getBlockEntity(loc);
 
         if (be == null) {
-            form.addElement(new ElementLabel("§cUnable to find block entity for the sign at " + loc2string(l, loc)));
+            form.addElement(new ElementLabel("§c오류! 해당 블럭의 엔티티를 찾을 수 없습니다 : " + loc2string(l, loc)));
         } else {
-            form.addElement(new ElementLabel("§7Editing sign at " + loc2string(l, loc)));
+            form.addElement(new ElementLabel("§7표지판을 수정했습니다, 수정된 표지판 : " + loc2string(l, loc)));
             String[] text = be.getText();
             form.addElement(new ElementInput("", "", text[0]));
             form.addElement(new ElementInput("", "", text[1]));
